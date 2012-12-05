@@ -48,6 +48,7 @@ set(tag_HDRS
   toolkit/tfilestream.h
   toolkit/tmap.h
   toolkit/tmap.tcc
+  toolkit/tpropertymap.h
   mpeg/mpegfile.h
   mpeg/mpegproperties.h
   mpeg/mpegheader.h
@@ -64,6 +65,7 @@ set(tag_HDRS
   mpeg/id3v2/frames/attachedpictureframe.h
   mpeg/id3v2/frames/commentsframe.h
   mpeg/id3v2/frames/generalencapsulatedobjectframe.h
+  mpeg/id3v2/frames/ownershipframe.h
   mpeg/id3v2/frames/popularimeterframe.h
   mpeg/id3v2/frames/privateframe.h
   mpeg/id3v2/frames/relativevolumeframe.h
@@ -150,6 +152,7 @@ set(frames_SRCS
   mpeg/id3v2/frames/attachedpictureframe.cpp
   mpeg/id3v2/frames/commentsframe.cpp
   mpeg/id3v2/frames/generalencapsulatedobjectframe.cpp
+  mpeg/id3v2/frames/ownershipframe.cpp
   mpeg/id3v2/frames/popularimeterframe.cpp
   mpeg/id3v2/frames/privateframe.cpp
   mpeg/id3v2/frames/relativevolumeframe.cpp
@@ -275,6 +278,7 @@ set(toolkit_SRCS
   toolkit/tfile.cpp
   toolkit/tfilestream.cpp
   toolkit/tdebug.cpp
+  toolkit/tpropertymap.cpp
   toolkit/unicode.cpp
 )
 

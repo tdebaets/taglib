@@ -28,6 +28,7 @@
 
 #include "taglib_export.h"
 #include "tfile.h"
+#include "tag.h"
 
 #include "mpegproperties.h"
 
@@ -98,6 +99,9 @@ namespace TagLib {
        * file's audio properties will also be read using \a propertiesStyle.  If
        * false, \a propertiesStyle is ignored.  The frames will be created using
        * \a frameFactory.
+       *
+       * \note TagLib will *not* take ownership of the stream, the caller is
+       * responsible for deleting it after the File object.
        */
       // BIC: merge with the above constructor
       File(IOStream *stream, ID3v2::FrameFactory *frameFactory,
@@ -127,6 +131,23 @@ namespace TagLib {
        * \see APETag()
        */
       virtual Tag *tag() const;
+
+      /*!
+       * Implements the unified property interface -- export function.
+       * If the file contains more than one tag, only the
+       * first one (in the order ID3v2, APE, ID3v1) will be converted to the
+       * PropertyMap.
+       */
+      PropertyMap properties() const;
+
+      void removeUnsupportedProperties(const StringList &properties);
+
+      /*!
+       * Implements the unified tag dictionary interface -- import function.
+       * As with the export, only one tag is taken into account. If the file
+       * has no tag at all, ID3v2 will be created.
+       */
+      PropertyMap setProperties(const PropertyMap &);
 
       /*!
        * Returns the MPEG::Properties for this file.  If no audio properties
@@ -192,9 +213,9 @@ namespace TagLib {
       /*!
        * Returns a pointer to the ID3v2 tag of the file.
        *
-       * If \a create is false (the default) this will return a null pointer
-       * if there is no valid ID3v2 tag.  If \a create is true it will create
-       * an ID3v2 tag if one does not exist.
+       * A tag will always be returned, regardless of whether there is a
+       * tag in the file or not. Use ID3v2::Tag::isEmpty() to check if
+       * the tag contains no data.
        *
        * \note The Tag <b>is still</b> owned by the MPEG::File and should not be
        * deleted by the user.  It will be deleted when the file (object) is
@@ -205,9 +226,9 @@ namespace TagLib {
       /*!
        * Returns a pointer to the ID3v1 tag of the file.
        *
-       * If \a create is false (the default) this will return a null pointer
-       * if there is no valid ID3v1 tag.  If \a create is true it will create
-       * an ID3v1 tag if one does not exist.
+       * A tag will always be returned, regardless of whether there is a
+       * tag in the file or not. Use Tag::isEmpty() to check if
+       * the tag contains no data.
        *
        * \note The Tag <b>is still</b> owned by the MPEG::File and should not be
        * deleted by the user.  It will be deleted when the file (object) is

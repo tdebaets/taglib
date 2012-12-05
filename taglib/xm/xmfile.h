@@ -48,6 +48,9 @@ namespace TagLib {
          * Contructs a Extended Module file from \a stream. If \a readProperties
          * is true the file's audio properties will also be read using
          * \a propertiesStyle. If false, \a propertiesStyle is ignored.
+         *
+         * \note TagLib will *not* take ownership of the stream, the caller is
+         * responsible for deleting it after the File object.
          */
         File(IOStream *stream, bool readProperties = true,
              AudioProperties::ReadStyle propertiesStyle =
@@ -59,6 +62,18 @@ namespace TagLib {
         virtual ~File();
 
         Mod::Tag *tag() const;
+
+        /*!
+         * Implements the unified property interface -- export function.
+         * Forwards to Mod::Tag::properties().
+         */
+        PropertyMap properties() const;
+
+        /*!
+         * Implements the unified property interface -- import function.
+         * Forwards to Mod::Tag::setProperties().
+         */
+        PropertyMap setProperties(const PropertyMap &);
 
         /*!
          * Returns the XM::Properties for this file. If no audio properties

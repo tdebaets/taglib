@@ -11,6 +11,11 @@ else()
 endif()
 OPTION(ENABLE_STATIC_RUNTIME "Visual Studio, link with runtime statically"  OFF)
 
+option(VISIBILITY_HIDDEN "Build with -fvisibility=hidden"  OFF)
+if(VISIBILITY_HIDDEN)
+  add_definitions (-fvisibility=hidden)
+endif()
+
 option(BUILD_TESTS "Build the test suite"  OFF)
 option(BUILD_EXAMPLES "Build the examples"  OFF)
 
@@ -42,7 +47,7 @@ if (MSVC AND ENABLE_STATIC_RUNTIME)
 endif()
 
 set(TAGLIB_LIB_MAJOR_VERSION "1")
-set(TAGLIB_LIB_MINOR_VERSION "7")
+set(TAGLIB_LIB_MINOR_VERSION "8")
 set(TAGLIB_LIB_PATCH_VERSION "0")
 
 set(TAGLIB_LIB_VERSION_STRING "${TAGLIB_LIB_MAJOR_VERSION}.${TAGLIB_LIB_MINOR_VERSION}.${TAGLIB_LIB_PATCH_VERSION}")
@@ -51,9 +56,9 @@ set(TAGLIB_LIB_VERSION_STRING "${TAGLIB_LIB_MAJOR_VERSION}.${TAGLIB_LIB_MINOR_VE
 # 2. If any interfaces have been added, removed, or changed since the last update, increment current, and set revision to 0.
 # 3. If any interfaces have been added since the last public release, then increment age.
 # 4. If any interfaces have been removed since the last public release, then set age to 0. 
-set(TAGLIB_SOVERSION_CURRENT  11)
+set(TAGLIB_SOVERSION_CURRENT  13)
 set(TAGLIB_SOVERSION_REVISION 0)
-set(TAGLIB_SOVERSION_AGE      10)
+set(TAGLIB_SOVERSION_AGE      12)
 
 math(EXPR TAGLIB_SOVERSION_MAJOR "${TAGLIB_SOVERSION_CURRENT} - ${TAGLIB_SOVERSION_AGE}")
 math(EXPR TAGLIB_SOVERSION_MINOR "${TAGLIB_SOVERSION_AGE}")
@@ -83,7 +88,10 @@ configure_file(taglib/taglib_config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/taglib_c
 
 add_subdirectory(taglib) 
 add_subdirectory(bindings)
-add_subdirectory(tests)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif(BUILD_TESTS)
 add_subdirectory(examples)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.cmake ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

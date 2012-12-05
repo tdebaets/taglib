@@ -23,6 +23,7 @@
 #include "tstringlist.h"
 #include "tdebug.h"
 #include "modfileprivate.h"
+#include "tpropertymap.h"
 
 #include <iostream>
 
@@ -67,6 +68,16 @@ Mod::Tag *S3M::File::tag() const
   return &d->tag;
 }
 
+PropertyMap S3M::File::properties() const
+{
+  return d->tag.properties();
+}
+
+PropertyMap S3M::File::setProperties(const PropertyMap &properties)
+{
+  return d->tag.setProperties(properties);
+}
+
 S3M::Properties *S3M::File::audioProperties() const
 {
   return &d->properties;
@@ -107,7 +118,7 @@ bool S3M::File::save()
   }
 
   seek(channels, Current);
-  
+
   StringList lines = d->tag.comment().split("\n");
   // write comment as sample names:
   for(ushort i = 0; i < sampleCount; ++ i) {
@@ -178,13 +189,13 @@ void S3M::File::read(bool)
     if(setting != 0xff) ++ channels;
   }
   d->properties.setChannels(channels);
-  
+
   seek(96);
   ushort realLength = 0;
   for(ushort i = 0; i < length; ++ i) {
-	  READ_BYTE_AS(order);
-	  if(order == 255) break;
-	  if(order != 254) ++ realLength;
+    READ_BYTE_AS(order);
+    if(order == 255) break;
+    if(order != 254) ++ realLength;
   }
   d->properties.setLengthInPatterns(realLength);
 

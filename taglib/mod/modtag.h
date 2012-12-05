@@ -150,14 +150,30 @@ namespace TagLib {
       /*!
        * Sets the tracker name to \a trackerName.  If \a trackerName is
        * String::null then this value will be cleared.
-       * 
+       *
        * Note that only XM files support this tag.  Setting the
        * tracker name for other module file formats will be ignored.
-       * 
+       *
        * The length of this tag is limited to 20 characters (1 character
        * = 1 byte).
        */
       void setTrackerName(const String &trackerName);
+
+      /*!
+       * Implements the unified property interface -- export function.
+       * Since the module tag is very limited, the exported map is as well.
+       */
+      PropertyMap properties() const;
+
+      /*!
+       * Implements the unified property interface -- import function.
+       * Because of the limitations of the module file tag, any tags besides
+       * COMMENT, TITLE and, if it is an XM file, TRACKERNAME, will be
+       * returened. Additionally, if the map contains tags with multiple values,
+       * all but the first will be contained in the returned map of unsupported
+       * properties.
+       */
+      PropertyMap setProperties(const PropertyMap &);
 
     private:
       Tag(const Tag &);

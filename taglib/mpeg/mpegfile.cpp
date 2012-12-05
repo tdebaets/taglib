@@ -35,6 +35,7 @@
 
 #include "mpegfile.h"
 #include "mpegheader.h"
+#include "tpropertymap.h"
 
 using namespace TagLib;
 
@@ -133,6 +134,40 @@ TagLib::Tag *MPEG::File::tag() const
   return &d->tag;
 }
 
+PropertyMap MPEG::File::properties() const
+{
+  // once Tag::properties() is virtual, this case distinction could actually be done
+  // within TagUnion.
+  if(d->hasID3v2)
+    return d->tag.access<ID3v2::Tag>(ID3v2Index, false)->properties();
+  if(d->hasAPE)
+    return d->tag.access<APE::Tag>(APEIndex, false)->properties();
+  if(d->hasID3v1)
+    return d->tag.access<ID3v1::Tag>(ID3v1Index, false)->properties();
+  return PropertyMap();
+}
+
+void MPEG::File::removeUnsupportedProperties(const StringList &properties)
+{
+  if(d->hasID3v2)
+    d->tag.access<ID3v2::Tag>(ID3v2Index, false)->removeUnsupportedProperties(properties);
+  else if(d->hasAPE)
+    d->tag.access<APE::Tag>(APEIndex, false)->removeUnsupportedProperties(properties);
+  else if(d->hasID3v1)
+    d->tag.access<ID3v1::Tag>(ID3v1Index, false)->removeUnsupportedProperties(properties);
+}
+PropertyMap MPEG::File::setProperties(const PropertyMap &properties)
+{
+  if(d->hasID3v2)
+    return d->tag.access<ID3v2::Tag>(ID3v2Index, false)->setProperties(properties);
+  else if(d->hasAPE)
+    return d->tag.access<APE::Tag>(APEIndex, false)->setProperties(properties);
+  else if(d->hasID3v1)
+    return d->tag.access<ID3v1::Tag>(ID3v1Index, false)->setProperties(properties);
+  else
+    return d->tag.access<ID3v2::Tag>(ID3v2Index, true)->setProperties(properties);
+}
+
 MPEG::Properties *MPEG::File::audioProperties() const
 {
   return d->properties;
@@ -172,12 +207,12 @@ bool MPEG::File::save(int tags, bool stripOthers, int id3v2Version)
   }
 
   // Create the tags if we've been asked to.  Copy the values from the tag that
-  // does exist into the new tag.
+  // does exist into the new tag, except if the existing tag is to be stripped.
 
-  if((tags & ID3v2) && ID3v1Tag())
+  if((tags & ID3v2) && ID3v1Tag() && !(stripOthers && !(tags & ID3v1)))
     Tag::duplicate(ID3v1Tag(), ID3v2Tag(true), false);
 
-  if((tags & ID3v1) && d->tag[ID3v2Index])
+  if((tags & ID3v1) && d->tag[ID3v2Index] && !(stripOthers && !(tags & ID3v2)))
     Tag::duplicate(ID3v2Tag(), ID3v1Tag(true), false);
 
   bool success = true;

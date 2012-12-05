@@ -48,6 +48,9 @@ namespace TagLib {
          * Contructs a Impulse Tracker file from \a stream. If \a readProperties
          * is true the file's audio properties will also be read using
          * \a propertiesStyle. If false, \a propertiesStyle is ignored.
+         *
+         * \note TagLib will *not* take ownership of the stream, the caller is
+         * responsible for deleting it after the File object.
          */
         File(IOStream *stram, bool readProperties = true,
              AudioProperties::ReadStyle propertiesStyle =
@@ -59,6 +62,18 @@ namespace TagLib {
         virtual ~File();
 
         Mod::Tag *tag() const;
+
+        /*!
+         * Forwards to Mod::Tag::properties().
+         * BIC: will be removed once File::toDict() is made virtual
+         */
+        PropertyMap properties() const;
+
+        /*!
+         * Forwards to Mod::Tag::setProperties().
+         * BIC: will be removed once File::setProperties() is made virtual
+         */
+        PropertyMap setProperties(const PropertyMap &);
 
         /*!
          * Returns the IT::Properties for this file. If no audio properties
@@ -73,6 +88,7 @@ namespace TagLib {
          * \note Saving Impulse Tracker tags is not supported.
          */
         bool save();
+
 
       private:
         File(const File &);

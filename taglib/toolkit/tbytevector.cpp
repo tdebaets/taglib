@@ -23,7 +23,7 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <ostream>
+#include <iostream>
 
 #include <tstring.h>
 #include <tdebug.h>
@@ -481,7 +481,7 @@ ByteVector &ByteVector::replace(const ByteVector &pattern, const ByteVector &wit
     target += withSize;
     offset += chunkSize + patternSize;
   }
-  
+
   // replace private data:
   if(d->deref())
     delete d;

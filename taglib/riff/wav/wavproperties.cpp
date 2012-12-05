@@ -104,7 +104,7 @@ int RIFF::WAV::Properties::sampleWidth() const
   return d->sampleWidth;
 }
 
-uint RIFF::WAV::Properties::sampleFrames() const
+TagLib::uint RIFF::WAV::Properties::sampleFrames() const
 {
   return d->sampleFrames;
 }
@@ -125,5 +125,5 @@ void RIFF::WAV::Properties::read(const ByteVector &data)
 
   d->length = byteRate > 0 ? d->streamLength / byteRate : 0;
   if(d->channels > 0 && d->sampleWidth > 0)
-    d->sampleFrames = d->streamLength / (d->channels * (d->sampleWidth / 8));
+    d->sampleFrames = d->streamLength / (d->channels * ((d->sampleWidth + 7) / 8));
 }

@@ -26,6 +26,8 @@
 #include <tbytevector.h>
 #include <tdebug.h>
 #include <id3v2tag.h>
+#include <tstringlist.h>
+#include <tpropertymap.h>
 
 #include "wavfile.h"
 
@@ -83,6 +85,17 @@ ID3v2::Tag *RIFF::WAV::File::tag() const
   return d->tag;
 }
 
+PropertyMap RIFF::WAV::File::properties() const
+{
+  return d->tag->properties();
+}
+
+PropertyMap RIFF::WAV::File::setProperties(const PropertyMap &properties)
+{
+  return d->tag->setProperties(properties);
+}
+
+
 RIFF::WAV::Properties *RIFF::WAV::File::audioProperties() const
 {
   return d->properties;
@@ -92,6 +105,11 @@ bool RIFF::WAV::File::save()
 {
   if(readOnly()) {
     debug("RIFF::WAV::File::save() -- File is read only.");
+    return false;
+  }
+
+  if(!isValid()) {
+    debug("RIFF::WAV::File::save() -- Trying to save invalid file.");
     return false;
   }
 
